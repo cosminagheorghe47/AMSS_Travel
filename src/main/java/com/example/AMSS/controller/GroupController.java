@@ -22,6 +22,15 @@ public class GroupController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GroupService groupService;
+
+    @GetMapping
+    public ResponseEntity<List<Group>> getAllGroups() {
+        List<Group> groups = groupService.getAllGroups();
+        return ResponseEntity.ok(groups);
+    }
+
     @PostMapping
     public ResponseEntity<Group> createGroup(@RequestBody Group groupRequest) {
         Group newGroup = new Group();
