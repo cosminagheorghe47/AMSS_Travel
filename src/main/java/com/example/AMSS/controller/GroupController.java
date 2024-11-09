@@ -27,7 +27,7 @@ public class GroupController {
 
     @GetMapping
     public ResponseEntity<List<Group>> getAllGroups() {
-        List<Group> groups = groupService.getAllGroups();
+        List<Group> groups = groupRepository.findAllByOrderByStartDateAsc();
         return ResponseEntity.ok(groups);
     }
 

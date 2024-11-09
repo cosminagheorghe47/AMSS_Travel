@@ -1,69 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const GroupForm = () => {
+const GroupForm = ({ onClose, onAddGroup }) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedUsers, setSelectedUsers] = useState([]);
-  const [creatorId] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
-        try {
-            const response = await axios.get('http://localhost:8080/api/users');
-            setUsers(response.data);
-        } catch (error) {
-            setError('Error fetching users: ' + error.message);
-        }
+      try {
+        const response = await axios.get('http://localhost:8080/api/users');
+        setUsers(response.data);
+      } catch (error) {
+        setError('Error fetching users: ' + error.message);
+      }
     };
-
     fetchUsers();
   }, []);
 
   const handleUserChange = (userId) => {
-    setSelectedUsers((prevSelected) => {
-      if (prevSelected.includes(userId)) {
-        return prevSelected.filter((id) => id !== userId);
-      } else {
-        return [...prevSelected, userId];
-      }
-    });
+    setSelectedUsers((prevSelected) =>
+      prevSelected.includes(userId)
+        ? prevSelected.filter((id) => id !== userId)
+        : [...prevSelected, userId]
+    );
   };
 
   const handleSubmit = async (event) => {
-      event.preventDefault();
+    event.preventDefault();
 
-      const groupData = {
-          name,
-          description,
-          startDate,
-          endDate,
-          users: selectedUsers.map(id => ({ id }))
-      };
+    const groupData = {
+      name,
+      description,
+      startDate,
+      endDate,
+      users: selectedUsers.map((id) => ({ id })),
+    };
 
-      console.log('Submitting group data:', groupData);
+    try {
+      await axios.post('http://localhost:8080/api/groups', groupData);
 
-      try {
-          const response = await axios.post('http://localhost:8080/api/groups', groupData);
-          console.log('Group created:', response.data);
+      setName('');
+      setDescription('');
+      setStartDate('');
+      setEndDate('');
+      setSelectedUsers([]);
 
-          setName('');
-          setDescription('');
-          setStartDate('');
-          setEndDate('');
-          setSelectedUsers([]);
-      } catch (error) {
-          console.error('Error creating group:', error);
-      }
+      onAddGroup();
+      onClose();
+    } catch (error) {
+      console.error('Error creating group:', error);
+    }
   };
-
-
-
 
   return (
     <form onSubmit={handleSubmit}>
@@ -113,24 +105,29 @@ const GroupForm = () => {
       </div>
       <div>
         <h3>Select Users:</h3>
-        {users.length > 0 ? ( // Check if users exist
-          users.map((user) => (
-            <div key={user.id}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={selectedUsers.includes(user.id)}
-                  onChange={() => handleUserChange(user.id)}
-                />
-                {user.name}
-              </label>
-            </div>
-          ))
-        ) : (
-          <p>No users available.</p> // Message if no users found
-        )}
+       <div className="user-list-container">
+         {users.length > 0 ? (
+           users.map((user) => (
+             <div key={user.id} className="user-checkbox">
+               <input
+                 type="checkbox"
+                 id={`user-${user.id}`}
+                 checked={selectedUsers.includes(user.id)}
+                 onChange={() => handleUserChange(user.id)}
+               />
+               <label htmlFor={`user-${user.id}`}>{user.name}</label>
+             </div>
+           ))
+         ) : (
+           <p>No users available.</p>
+         )}
+       </div>
+
       </div>
       <button type="submit">Create Group</button>
+      <button type="button" onClick={onClose}>
+        Cancel
+      </button>
     </form>
   );
 };
