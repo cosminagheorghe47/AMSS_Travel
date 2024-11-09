@@ -25,8 +25,10 @@ public class DataInitializer implements CommandLineRunner {
             user2.setName("Bob");
             User user3 = new User();
             user3.setName("Eve");
+            User user4 = new User();
+            user4.setName("Cosmina");
 
-            userRepository.saveAll(Arrays.asList(user1, user2, user3));
+            userRepository.saveAll(Arrays.asList(user1, user2, user3,user4));
             System.out.println("Sample users added to the database.");
         }
     }
