@@ -1,25 +1,28 @@
-// src/main/java/com/example/AMSS/services/UserService.java
 package com.example.AMSS.service;
-
 import com.example.AMSS.model.User;
-import com.example.AMSS.repository.GroupRepository;
-import com.example.AMSS.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
+    private final FirebaseService firebaseService;
 
-    @Autowired
-    private UserRepository userRepository;
+    public UserService() throws IOException {
+        firebaseService = new FirebaseService();
+    }
 
     public User createUser(User user) {
-        return userRepository.save(user);
+        return null;
     }
 
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        try {
+            return firebaseService.getAllUsersFromFirestore();
+        } catch (ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
