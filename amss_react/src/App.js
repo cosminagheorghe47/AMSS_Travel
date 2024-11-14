@@ -1,32 +1,21 @@
-import React, { useState } from 'react';
-import GroupForm from './components/GroupForm';
-import GroupList from './components/GroupList';
+import React from 'react';
 import './App.css';
+import Login from './pages/Login';
+import Group from './pages/Group';
+import { Routes, Route } from "react-router-dom";
+import Register from './pages/Register';
 
 function App() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [refreshGroups, setRefreshGroups] = useState(false);
-
-  const handleAddGroup = () => {
-    setRefreshGroups(!refreshGroups);
-  };
-
   return (
-    <div>
-      <h1>Travel Management</h1>
-      <button onClick={() => setIsFormOpen(true)}>Add New Group</button>
-
-      {isFormOpen && (
-        <div className="modal">
-          <div className="modal-content">
-            <GroupForm onClose={() => setIsFormOpen(false)} onAddGroup={handleAddGroup} />
-          </div>
-        </div>
-      )}
-
-      <GroupList refreshGroups={refreshGroups} />
-    </div>
-  );
+    <>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/home" element={<Group />} />
+      </Routes>
+    </>
+  )
 }
 
 export default App;

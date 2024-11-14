@@ -1,25 +1,39 @@
-// src/main/java/com/example/AMSS/services/UserService.java
 package com.example.AMSS.service;
-
 import com.example.AMSS.model.User;
-import com.example.AMSS.repository.GroupRepository;
-import com.example.AMSS.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QueryDocumentSnapshot;
+import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
+    private static final String COLLECTION_NAME = "users";
 
-    @Autowired
-    private UserRepository userRepository;
+    public String createUser(User user) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
 
-    public User createUser(User user) {
-        return userRepository.save(user);
+        ApiFuture<WriteResult> collectionApiFuture = db.collection(COLLECTION_NAME).document().set(user);
+        return collectionApiFuture.get().getUpdateTime().toString();
+        //        return null;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<User> getAllUsers() throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        List<User> usersList = new ArrayList<>();
+        QuerySnapshot querySnapshot = db.collection(COLLECTION_NAME).get().get();
+        for (QueryDocumentSnapshot document : querySnapshot) {
+            User user = new User((Long) document.get("id"), (String) document.get("name"), (String) document.get("email"));
+//            User user = document.toObject(User.class);
+            usersList.add(user);
+        }
+        return usersList;
     }
 }
