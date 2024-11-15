@@ -28,10 +28,16 @@ export const loginWithEmailAndPassword = async (email, password) => {
   }
 };
 
-export const registerWithEmailAndPassword = async (email, password) => {
+export const registerWithEmailAndPassword = async (email, password, username) => {
   try {
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-    return userCredential.user;
+    const user = userCredential.user;
+
+    await user.updateProfile({
+      displayName: username
+    });
+
+    return user;
   } catch (error) {
     throw error; 
   }

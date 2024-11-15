@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import '../styles/Auth.css';
 import {NavLink, useNavigate} from 'react-router-dom';
 import { registerWithEmailAndPassword } from '../firebase';
@@ -17,7 +16,7 @@ const Register = () => {
     const handleRegister = async (e) => {
         e.preventDefault();
         try {
-          await registerWithEmailAndPassword(values.email, values.password);
+          await registerWithEmailAndPassword(values.email, values.password, values.username);
           navigate("/login"); 
         } catch (err) {
           setError("Register failed: " + err.message); 

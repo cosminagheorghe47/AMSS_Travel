@@ -5,6 +5,9 @@ import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.ListUsersPage;
+import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
 
@@ -24,16 +27,28 @@ public class UserService {
         //        return null;
     }
 
-    public List<User> getAllUsers() throws ExecutionException, InterruptedException {
-        Firestore db = FirestoreClient.getFirestore();
+//    public List<User> getAllUsers() throws ExecutionException, InterruptedException {
+//        Firestore db = FirestoreClient.getFirestore();
+//
+//        List<User> usersList = new ArrayList<>();
+//        QuerySnapshot querySnapshot = db.collection(COLLECTION_NAME).get().get();
+//        for (QueryDocumentSnapshot document : querySnapshot) {
+//            User user = new User((Long) document.get("id"), (String) document.get("name"), (String) document.get("email"));
+////            User user = document.toObject(User.class);
+//            usersList.add(user);
+//        }
+//        return usersList;
+//    }
 
-        List<User> usersList = new ArrayList<>();
-        QuerySnapshot querySnapshot = db.collection(COLLECTION_NAME).get().get();
-        for (QueryDocumentSnapshot document : querySnapshot) {
-            User user = new User((Long) document.get("id"), (String) document.get("name"), (String) document.get("email"));
-//            User user = document.toObject(User.class);
-            usersList.add(user);
+    public List<UserRecord> getAllUsers() throws Exception {
+        List<UserRecord> users = new ArrayList<>();
+        ListUsersPage page = FirebaseAuth.getInstance().listUsers(null);
+        while (page != null) {
+            for (UserRecord user : page.getValues()) {
+                users.add(user);
+            }
+            page = page.getNextPage();
         }
-        return usersList;
+        return users;
     }
 }

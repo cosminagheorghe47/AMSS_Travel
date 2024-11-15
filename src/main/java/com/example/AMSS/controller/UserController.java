@@ -6,6 +6,7 @@ import com.example.AMSS.service.UserService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +49,9 @@ public class UserController {
         return ResponseEntity.ok(createdTime);
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() throws ExecutionException, InterruptedException {
-        List<User> users = userService.getAllUsers();
+    @GetMapping("/users")
+    public ResponseEntity<List<UserRecord>> getAllUsers() throws Exception {
+        List<UserRecord> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
 }

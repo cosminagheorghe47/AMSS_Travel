@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import '../styles/Auth.css';
 import {NavLink, useNavigate} from 'react-router-dom';
-import { auth, loginWithEmailAndPassword } from '../firebase';
+import { loginWithEmailAndPassword } from '../firebase';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -15,7 +14,6 @@ const Login = () => {
 
     const handleLogin = async (event) => {
         event.preventDefault();
-        console.log(values);
         try {
             await loginWithEmailAndPassword(values.email, values.password);
             navigate("/home");
