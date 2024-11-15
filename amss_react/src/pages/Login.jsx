@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/Auth.css';
 import {NavLink, useNavigate} from 'react-router-dom';
-import { auth } from '../firebase';
+import { auth, loginWithEmailAndPassword } from '../firebase';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -17,19 +17,8 @@ const Login = () => {
         event.preventDefault();
         console.log(values);
         try {
-            const userCredential = await auth.signInWithEmailAndPassword(values.email, values.password);
-            const token = await userCredential.user.getIdToken();
-            console.log(token);
-            localStorage.setItem('token', token);
-            const response = await axios.post('http://localhost:8080/auth/login', {}, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-            });
-            console.log('response ' + response);
-            if (response.data) {
-                navigate("/home");
-            }
+            await loginWithEmailAndPassword(values.email, values.password);
+            navigate("/home");
         } catch (error) {
             setError("Login failed: " + error.message);
         }

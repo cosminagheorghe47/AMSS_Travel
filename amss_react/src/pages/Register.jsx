@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import '../styles/Auth.css';
 import {NavLink, useNavigate} from 'react-router-dom';
+import { registerWithEmailAndPassword } from '../firebase';
 
 const Register = () => {
     const navigate = useNavigate();
@@ -12,6 +13,16 @@ const Register = () => {
         username: "",
         password: "",
     });
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        try {
+          await registerWithEmailAndPassword(values.email, values.password);
+          navigate("/login"); 
+        } catch (err) {
+          setError("Register failed: " + err.message); 
+        }
+      };
 
     return (
         <div>
@@ -52,7 +63,10 @@ const Register = () => {
 
                         <div>
                             <div className="auth-input">
-                                <button style={{width: '50%'}}>REGISTER</button>
+                                <button style={{width: '50%'}}
+                                    onClick={handleRegister}>
+                                    REGISTER
+                                </button>
                             </div>
                         </div>
                     </form>
