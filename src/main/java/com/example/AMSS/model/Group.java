@@ -1,11 +1,20 @@
 package com.example.AMSS.model;
 
-
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.cloud.Timestamp;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.cloud.Timestamp;
+import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
 @Table(name = "groups")
@@ -15,31 +24,20 @@ public class Group {
     private Long id;
     private String name;
     private String description;
-
-
-    private LocalDate startDate;
-    private LocalDate endDate;
-
-
-    @ManyToMany
-    @JoinTable(
-            name = "group_users",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users = new ArrayList<>();
+    private Date startDate; // Changed to java.util.Date
+    private Date endDate;   // Changed to java.util.Date
 
     public Group() {}
 
-    public Group(String name, String description, LocalDate startDate, LocalDate endDate, User creator) {
+    public Group(Long id, String name, String description, Date startDate, Date endDate) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
-        this.users.add(creator);
     }
 
-
+    // Getters and Setters
     public Long getId() {
         return id;
     }
@@ -64,27 +62,20 @@ public class Group {
         this.description = description;
     }
 
-    public LocalDate getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
 }
