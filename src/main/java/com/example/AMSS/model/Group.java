@@ -29,6 +29,9 @@ public class Group {
     )
     private List<User> users = new ArrayList<>();
 
+    @OneToMany(mappedBy = "group")
+    private List<Expense> expenses;
+
     public Group() {}
 
     public Group(String name, String description, LocalDate startDate, LocalDate endDate, User creator) {
@@ -86,5 +89,13 @@ public class Group {
 
     public void setUsers(List<User> users) {
         this.users = users;
+    }
+
+    public List<Expense> getExpenses(){
+        return expenses;
+    }
+
+    public void setExpenses(List<Expense> expenses){
+        this.expenses = expenses;
     }
 }

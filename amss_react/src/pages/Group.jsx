@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import GroupForm from "../components/GroupForm";
 import GroupList from "../components/GroupList";
+import { useNavigate } from 'react-router-dom';
 
 const Group = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [refreshGroups, setRefreshGroups] = useState(false);
+    const navigate = useNavigate();
   
     const handleAddGroup = () => {
       setRefreshGroups(!refreshGroups);
+    };
+
+    const handleGroupClick = (groupId) => {
+      navigate(`/groups/Id=${groupId}`);
     };
   
     return (
@@ -23,7 +29,7 @@ const Group = () => {
           </div>
         )}
   
-        <GroupList refreshGroups={refreshGroups} />
+        <GroupList refreshGroups={refreshGroups} onGroupClick={handleGroupClick}/>
       </div>
     );
 }

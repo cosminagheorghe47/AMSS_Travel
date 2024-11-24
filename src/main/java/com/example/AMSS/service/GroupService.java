@@ -39,5 +39,10 @@ public class GroupService {
     public Group createGroup(Group group) {
         return groupRepository.save(group);
     }
+
+    public Group getGroupById(Long groupId) {
+        return groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found with id: " + groupId));
+    }
 }
 

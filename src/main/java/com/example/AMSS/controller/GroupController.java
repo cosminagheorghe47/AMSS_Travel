@@ -45,4 +45,10 @@ public class GroupController {
         Group savedGroup = groupRepository.save(newGroup);
         return ResponseEntity.ok(savedGroup);
     }
+
+    @GetMapping("/{groupId}")
+    public ResponseEntity<Group> getGroupById(@PathVariable Long groupId) {
+        Group group = groupService.getGroupById(groupId);
+        return ResponseEntity.ok(group);
+    }
 }
