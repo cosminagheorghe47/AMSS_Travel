@@ -15,8 +15,35 @@ const GroupList = ({ refreshGroups }) => {
     }
   };
 
+  const fetchUsersForGroup = async (groupId) => {
+    try {
+      const response = await axios.get(`/api/user-groups/group/${groupId}`);
+      console.log(`Users for group ${groupId}:`, response.data);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching users for group ${groupId}:`, error);
+      return [];
+    }
+  };
+
   useEffect(() => {
-    fetchGroups();
+   const fetchAllGroupsWithUsers = async () => {
+     const fetchedGroups = await axios.get('/api/groups');
+     const groupsWithUsers = await Promise.all(
+       fetchedGroups.data.map(async (group) => {
+         const users = await fetchUsersForGroup(group.id);
+         console.log('Fetched users for group:', group.id, users); // Debug log
+         return {
+           ...group,
+           users: users,
+         };
+       })
+     );
+     console.log('Groups with users:', groupsWithUsers); // Debug log
+     setGroups(groupsWithUsers);
+   };
+
+    fetchAllGroupsWithUsers();
   }, [refreshGroups]);
 
   const handleGroupClick = (groupId) => {
