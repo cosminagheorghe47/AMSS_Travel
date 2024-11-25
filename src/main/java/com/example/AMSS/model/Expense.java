@@ -1,6 +1,6 @@
 package com.example.AMSS.model;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -14,26 +14,13 @@ public class Expense {
     private Long id;
     private String description;
     private double amount;
-    private LocalDate date;
+    private Date creationDate;
     
     @Enumerated(EnumType.STRING)
     private ExpenseType type;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;        // Grupul asociat cheltuielii
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User createdBy;     // Utilizatorul care a creat cheltuiala
-
-    @ManyToMany
-    @JoinTable(
-        name = "expense_users",
-        joinColumns = @JoinColumn(name = "expense_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> sharedWith; // Utilizatorii cu care se împarte cheltuiala
+    private Long groupId;
+    private Long createdById; 
 
     public Expense() {}
 
@@ -69,28 +56,28 @@ public class Expense {
         this.type = type;
     }
 
-    public Group getGroup() {
-        return group;
+    public Date getCreationDate(){
+        return creationDate;
     }
 
-    public void setGroup(Group group) {
-        this.group = group;
+    public void setCreationDate(Date creationDate){
+        this.creationDate = creationDate;
     }
 
-    public User getCreatedBy() {
-        return createdBy;
+    public Long getGroupId() {
+        return groupId;
     }
 
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
+    public void setGroupId(Long groupId) {
+        this.groupId = groupId;
     }
 
-    public List<User> getSharedWith() {
-        return sharedWith;
+    public Long getCreatedById() {
+        return createdById;
     }
 
-    public void setSharedWith(List<User> sharedWith) {
-        this.sharedWith = sharedWith;
+    public void setCreatedById(Long createdById) {
+        this.createdById = createdById;
     }
     
 }

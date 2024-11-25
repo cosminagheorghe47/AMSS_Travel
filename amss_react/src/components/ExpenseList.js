@@ -6,23 +6,25 @@ const ExpenseList = ({ expenses }) => {
   }
 
   return (
-    <ul>
+    <div>
+      <h2>Expenses</h2>
+      <ul className="group-list">
       {expenses.map((expense) => (
         <li
           key={expense.id}
-          style={{
-            border: '1px solid #ccc',
-            margin: '10px 0',
-            padding: '10px',
-          }}
+          style={{ cursor: 'pointer', border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}
         >
-          <p><strong>Created by:</strong>{expense.createdBy}</p>  
+          <p>
+            <strong>Created by:</strong>{" "}
+            {expense.createdById || "Unknown"}
+          </p> 
           <p><strong>Description:</strong> {expense.description}</p>
           <p><strong>Amount:</strong> {expense.amount.toFixed(2)} RON</p>
           <p><strong>Type:</strong> {expense.type}</p>
         </li>
       ))}
     </ul>
+    </div>
   );
 };
 

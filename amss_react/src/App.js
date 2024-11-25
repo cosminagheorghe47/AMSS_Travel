@@ -14,7 +14,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<Group />} />
-        <Route path="/groups/Id=:groupId" element={<Expense />} />
+        <Route path="/group/:groupId" element={<Expense />} />
       </Routes>
     </>
   )

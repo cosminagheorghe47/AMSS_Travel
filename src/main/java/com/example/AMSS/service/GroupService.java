@@ -3,6 +3,7 @@ import java.util.logging.Logger;
 
 import com.example.AMSS.model.Group;
 import com.example.AMSS.repository.GroupRepository;
+import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
@@ -20,6 +21,10 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class GroupService {
+
+    @Autowired
+    private GroupRepository groupRepository;
+    
     private static final String COLLECTION_NAME = "groups";
 
     public List<Group> getAllGroups() throws ExecutionException, InterruptedException {
@@ -46,9 +51,19 @@ public class GroupService {
         return group;
     }
 
-    public Group getGroupById(Long groupId) {
-        return groupRepository.findById(groupId)
-                .orElseThrow(() -> new RuntimeException("Group not found with id: " + groupId));
+    public Group getGroupById(Long groupId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        String groupIdStr = String.valueOf(groupId);
+
+        DocumentSnapshot document = db.collection(COLLECTION_NAME).document(groupIdStr).get().get();
+
+        if (document.exists()) {
+            Group group = document.toObject(Group.class);
+            return group;
+        } else {
+            throw new RuntimeException("Group not found with id: " + groupId);
+        }
     }
 }
 

@@ -10,7 +10,7 @@ import com.example.AMSS.model.Expense;
 @Repository
 public interface ExpenseRepository extends JpaRepository<Expense, Long> {
 
-    List<Expense> findByGroupId(Long groupId);
+    // List<Expense> findByGroupId(Long groupId);
 
-    List<Expense> findByCreatedById(Long userId);
+    // List<Expense> findByCreatedById(Long userId);
 }

@@ -13,7 +13,7 @@ const Group = () => {
     };
 
     const handleGroupClick = (groupId) => {
-      navigate(`/groups/Id=${groupId}`);
+      navigate(`/groups/${groupId}`);
     };
   
     return (

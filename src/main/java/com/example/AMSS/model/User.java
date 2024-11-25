@@ -15,12 +15,6 @@ public class User {
     private String password;
     private String email;
 
-    @OneToMany(mappedBy = "createdBy")
-    private List<Expense> createdExpenses;
-
-    @ManyToMany(mappedBy = "sharedWith")
-    private List<Expense> sharedExpenses;
-
     public User() {}
 
     public User(String name) {
@@ -70,22 +64,6 @@ public class User {
 
     public String getPassword() {
         return password;
-    }
-
-    public List<Expense> getCreatedExpenses() {
-        return createdExpenses;
-    }
-
-    public void setCreatedExpenses(List<Expense> createdExpenses) {
-        this.createdExpenses = createdExpenses;
-    }
-
-    public List<Expense> getSharedExpenses() {
-        return sharedExpenses;
-    }
-
-    public void setSharedExpenses(List<Expense> sharedExpenses) {
-        this.sharedExpenses = sharedExpenses;
     }
 }
 

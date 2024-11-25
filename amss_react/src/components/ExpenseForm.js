@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState(0);
   const [type, setType] = useState('individual');
-  const [selectedUsers, setSelectedUsers] = useState(
-    groupDetails.users.map((user) => ({
-      ...user,
-      isChecked: false,
-      amount: 0,
-    }))
-  );
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(`/api/user-groups/group/${groupDetails.id}`);
+        if (response.ok) {
+          const users = await response.json();
+          setSelectedUsers(
+            users.map((user) => ({
+              ...user,
+              isChecked: false,
+              amount: 0,
+            }))
+          );
+        } else {
+          console.error('Failed to fetch users for group.');
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+
+    fetchUsers();
+  }, [groupDetails.id]);
 
   const handleUserToggle = (userId) => {
     setSelectedUsers((prev) =>
@@ -22,29 +40,57 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
     );
   };
 
+  const handleAmountChange = (e) => {
+    const value = e.target.value;
+    if (value === "") {
+      setAmount("");
+    } else {
+      setAmount(parseFloat(value) || 0);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const expenseData = {
       description,
       amount,
-      type,
+      creationDate: new Date().toISOString(),
+      type: type.toUpperCase(),
       groupId: groupDetails.id,
-      users: selectedUsers
-        .filter((user) => user.isChecked)
-        .map((user) => user.id),
+      createdById: 0   //DE SCHIMBAT CU USERUL CURENT
     };
 
     try {
-      const response = await fetch('/api/expenses', {
+      const expenseResponse = await fetch('/api/expenses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(expenseData),
       });
 
-      if (response.ok) {
-        const newExpense = await response.json();
+      if (expenseResponse.ok) {
+        const newExpense = await expenseResponse.json();
+
+        const userPromises = selectedUsers
+          .filter((user) => user.isChecked)
+          .map((user) => {
+            const expenseUserData = {
+              expenseId: newExpense.id,
+              userId: user.id,
+            };
+
+            return fetch('/api/expense-users', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(expenseUserData),
+            });
+          });
+        
+        await Promise.all(userPromises);
+
         onAddExpense(newExpense);
+
+        onClose();
       }
     } catch (error) {
       console.error('Error adding expense:', error);
@@ -53,7 +99,8 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h3>Add Expense</h3>
+      <h2>Add Expense</h2>
+      <div>
       <label>
         Description:
         <input
@@ -63,48 +110,58 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
           required
         />
       </label>
+      </div>
+      <div>
       <label>
         Amount:
         <input
           type="number"
           value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
+          onChange={handleAmountChange}
           required
         />
       </label>
+      </div>
+      <div>
       <label>
         Type:
+        <div className="user-list-container">
         <input
-          type="radio"
-          value="individual"
+          type="checkbox"
+          id="INDIVIDUAL"
           checked={type === 'individual'}
           onChange={() => setType('individual')}
         /> Individual
         <input
-          type="radio"
-          value="group"
+          type="checkbox"
+          id="GROUP"
           checked={type === 'group'}
           onChange={() => setType('group')}
         /> Group
+        </div>
       </label>
-
+      </div>
+      
       {type === 'group' && (
         <div>
-          <h4>Split Between:</h4>
-          <ul>
-            {selectedUsers.map((user) => (
-              <li key={user.id}>
-                <label>
+          <h3>Split Between:</h3>
+          <div className="user-list-container">
+            {selectedUsers.length>0 ? (
+              selectedUsers.map((user) => (
+                <div key={user.id} className="user-checkbox">
                   <input
                     type="checkbox"
+                    id={`user-${user.id}`}
                     checked={user.isChecked}
                     onChange={() => handleUserToggle(user.id)}
                   />
-                  {user.name}
-                </label>
-              </li>
-            ))}
-          </ul>
+                  <label htmlFor={`user-${user.id}`}>{user.name}</label>
+                </div>
+              ))
+            ) : (
+              <p>No users available.</p>
+            )}
+          </div>
         </div>
       )}
 

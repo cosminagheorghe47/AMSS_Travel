@@ -5,7 +5,8 @@ import ExpenseList from "../components/ExpenseList";
 
 
 const Expense = () => {
-    const { groupId } = useParams();  // groupId din URL
+    const { groupId } = useParams();
+    console.log("Group ID from URL:", groupId);
     const [groupDetails, setGroupDetails] = useState(null);
     const [expenses, setExpenses] = useState([]); 
     const [isFormOpen, setIsFormOpen] = useState(false);
@@ -42,7 +43,7 @@ const Expense = () => {
   
     return (
       <div>
-        <h1>Group: {groupDetails.name}</h1>
+        <h1>{groupDetails.name}</h1>
         <p><strong>Description:</strong> {groupDetails.description}</p>
         <p><strong>Start Date:</strong> {new Date(groupDetails.startDate).toLocaleDateString()}</p>
         <p><strong>End Date:</strong> {new Date(groupDetails.endDate).toLocaleDateString()}</p>
@@ -50,11 +51,15 @@ const Expense = () => {
         <button onClick={() => setIsFormOpen(true)}>Add Expense</button>
   
         {isFormOpen && (
-          <ExpenseForm
+          <div className="modal">
+            <div className="modal-content">
+            <ExpenseForm
             groupDetails={groupDetails}
             onClose={() => setIsFormOpen(false)}
             onAddExpense={handleAddExpense}
-          />
+            />
+            </div>
+          </div>
         )}
   
         <ExpenseList expenses={expenses} />

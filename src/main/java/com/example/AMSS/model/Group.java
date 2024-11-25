@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.cloud.Timestamp;
@@ -24,11 +26,8 @@ public class Group {
     private Long id;
     private String name;
     private String description;
-    private Date startDate; // Changed to java.util.Date
-    private Date endDate;   // Changed to java.util.Date
-
-    @OneToMany(mappedBy = "group")
-    private List<Expense> expenses;
+    private Date startDate; 
+    private Date endDate;  
 
     public Group() {}
 
@@ -81,22 +80,4 @@ public class Group {
         this.endDate = endDate;
     }
 
-<<<<<<< HEAD
-    public List<User> getUsers() {
-        return users;
-    }
-
-    public void setUsers(List<User> users) {
-        this.users = users;
-    }
-
-    public List<Expense> getExpenses(){
-        return expenses;
-    }
-
-    public void setExpenses(List<Expense> expenses){
-        this.expenses = expenses;
-    }
-=======
->>>>>>> main
 }

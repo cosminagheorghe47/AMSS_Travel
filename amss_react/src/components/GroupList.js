@@ -47,7 +47,7 @@ const GroupList = ({ refreshGroups }) => {
   }, [refreshGroups]);
 
   const handleGroupClick = (groupId) => {
-    navigate(`/group/Id=${groupId}`);
+    navigate(`/group/${groupId}`);
   };
 
   return (
