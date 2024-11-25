@@ -6,7 +6,9 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.cloud.Timestamp;
@@ -24,8 +26,8 @@ public class Group {
     private Long id;
     private String name;
     private String description;
-    private Date startDate; // Changed to java.util.Date
-    private Date endDate;   // Changed to java.util.Date
+    private Date startDate; 
+    private Date endDate;  
 
     public Group() {}
 

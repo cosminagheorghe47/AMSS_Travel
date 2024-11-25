@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const GroupList = ({ refreshGroups }) => {
   const [groups, setGroups] = useState([]);
+  const navigate = useNavigate();
 
   const fetchGroups = async () => {
     try {
@@ -44,12 +46,20 @@ const GroupList = ({ refreshGroups }) => {
     fetchAllGroupsWithUsers();
   }, [refreshGroups]);
 
+  const handleGroupClick = (groupId) => {
+    navigate(`/group/${groupId}`);
+  };
+
   return (
     <div>
       <h2>Groups</h2>
       <ul className="group-list">
         {groups.map((group) => (
-          <li key={group.id}>
+          <li 
+            key={group.id}
+            onClick={() => handleGroupClick(group.id)}
+            style={{ cursor: 'pointer', border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}
+            >
             <h3>{group.name}</h3>
             <p><strong>Description:</strong> {group.description}</p>
             <p><strong>Start Date:</strong> {new Date(group.startDate).toLocaleDateString()}</p>

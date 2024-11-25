@@ -32,4 +32,22 @@ public class GroupController {
         Group savedGroup = groupService.createGroup(groupRequest);
         return ResponseEntity.ok(savedGroup);
     }
+
+
+    @GetMapping("/{groupId}")
+    public ResponseEntity<Group> getGroupById(@PathVariable Long groupId) {
+        try {
+            Group group = groupService.getGroupById(groupId);
+            return ResponseEntity.ok(group);
+        } catch (RuntimeException | ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+
+    // public ResponseEntity<Group> getGroupById(@PathVariable Long groupId) {
+    //     Group group = groupService.getGroupById(groupId);
+    //     return ResponseEntity.ok(group);
+    // }
 }
+
+
