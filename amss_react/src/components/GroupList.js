@@ -49,21 +49,62 @@ const GroupList = ({ refreshGroups }) => {
   const handleGroupClick = (groupId) => {
     navigate(`/group/${groupId}`);
   };
+    const deleteGroup = async (groupId) => {
+        if (window.confirm('Are you sure you want to delete this group?')) {
+          try {
+            await axios.delete(`/api/groups/${groupId}`);
+            alert('Group deleted successfully.');
+            fetchGroups();
+          } catch (error) {
+            console.error('Error deleting group:', error);
+            alert('Failed to delete group.');
+          }
+        }
+      };
 
   return (
     <div>
       <h2>Groups</h2>
       <ul className="group-list">
         {groups.map((group) => (
-          <li 
+          <li
             key={group.id}
-            onClick={() => handleGroupClick(group.id)}
-            style={{ cursor: 'pointer', border: '1px solid #ccc', padding: '10px', margin: '10px 0' }}
+            style={{
+              border: '1px solid #ccc',
+              padding: '10px',
+              margin: '10px 0',
+            }}
+          >
+            <h3
+              onClick={() => handleGroupClick(group.id)}
+              style={{ cursor: 'pointer', color: 'blue' }}
             >
-            <h3>{group.name}</h3>
-            <p><strong>Description:</strong> {group.description}</p>
-            <p><strong>Start Date:</strong> {new Date(group.startDate).toLocaleDateString()}</p>
-            <p><strong>End Date:</strong> {new Date(group.endDate).toLocaleDateString()}</p>
+              {group.name}
+            </h3>
+            <p>
+              <strong>Description:</strong> {group.description}
+            </p>
+            <p>
+              <strong>Start Date:</strong>{' '}
+              {new Date(group.startDate).toLocaleDateString()}
+            </p>
+            <p>
+              <strong>End Date:</strong>{' '}
+              {new Date(group.endDate).toLocaleDateString()}
+            </p>
+            <button
+              onClick={() => deleteGroup(group.id)}
+              style={{
+                backgroundColor: 'red',
+                color: 'white',
+                border: 'none',
+                padding: '5px 10px',
+                cursor: 'pointer',
+                marginTop: '10px',
+              }}
+            >
+              Delete Group
+            </button>
             <div>
               <strong>Members:</strong>
               <ul>

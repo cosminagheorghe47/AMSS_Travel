@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"; 
+import { useParams } from "react-router-dom";
 import ExpenseForm from "../components/ExpenseForm";
 import ExpenseList from "../components/ExpenseList";
 import ExpenseDetails from "../components/ExpenseDetails";
@@ -9,6 +9,8 @@ const Expense = () => {
     const [groupDetails, setGroupDetails] = useState(null);
     const [expenses, setExpenses] = useState([]);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isReportOpen, setIsReportOpen] = useState(false);
+    const [isIndividualReportOpen, setIsIndividualReportOpen] = useState(false);
     const [selectedExpense, setSelectedExpense] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -39,15 +41,31 @@ const Expense = () => {
         setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== expenseId));
     };
 
+    const calculateTotalExpenses = () => {
+        return expenses.reduce((total, expense) => total + expense.amount, 0).toFixed(2);
+    };
+
+    const calculateIndividualExpenses = () => {
+        return expenses
+            .filter((expense) => expense.type === "individual")
+            .reduce((total, expense) => total + expense.amount, 0)
+            .toFixed(2);
+    };
+
     if (!groupDetails) return <p>Loading group details...</p>;
 
     return (
         <div>
             <h1>{groupDetails.name}</h1>
+            <p><strong>Description:</strong> {groupDetails.description}</p>
             <p><strong>Start Date:</strong> {new Date(groupDetails.startDate).toLocaleDateString()}</p>
             <p><strong>End Date:</strong> {new Date(groupDetails.endDate).toLocaleDateString()}</p>
 
-            <button onClick={() => setIsFormOpen(true)}>Add Expense</button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+                <button onClick={() => setIsFormOpen(true)}>Add Expense</button>
+                <button onClick={() => setIsReportOpen(true)}>View Total Expenses</button>
+                <button onClick={() => setIsIndividualReportOpen(true)}>View Individual Expenses</button>
+            </div>
 
             {isFormOpen && (
                 <div className="modal">
@@ -57,6 +75,26 @@ const Expense = () => {
                             onClose={() => setIsFormOpen(false)}
                             onAddExpense={handleAddExpense}
                         />
+                    </div>
+                </div>
+            )}
+
+            {isReportOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Total Expenses Report</h3>
+                        <p><strong>Total Amount Spent:</strong> {calculateTotalExpenses()} RON</p>
+                        <button onClick={() => setIsReportOpen(false)}>Close</button>
+                    </div>
+                </div>
+            )}
+
+            {isIndividualReportOpen && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <h3>Individual Expenses Report</h3>
+                        <p><strong>Total Amount Spent on Individual Expenses:</strong> {calculateIndividualExpenses()} RON</p>
+                        <button onClick={() => setIsIndividualReportOpen(false)}>Close</button>
                     </div>
                 </div>
             )}
@@ -72,12 +110,12 @@ const Expense = () => {
 
             {isModalOpen && selectedExpense && (
                 <ExpenseDetails
-                expense={selectedExpense}
-                onClose={() => setIsModalOpen(false)}
-                onDelete={(expenseId) => {
-                  setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== expenseId));
-                }}
-              />
+                    expense={selectedExpense}
+                    onClose={() => setIsModalOpen(false)}
+                    onDelete={(expenseId) => {
+                        setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== expenseId));
+                    }}
+                />
             )}
         </div>
     );

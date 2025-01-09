@@ -48,6 +48,18 @@ public class GroupController {
     //     Group group = groupService.getGroupById(groupId);
     //     return ResponseEntity.ok(group);
     // }
+    @DeleteMapping("/{groupId}")
+    public ResponseEntity<String> deleteGroup(@PathVariable Long groupId) {
+        try {
+            groupService.deleteGroup(groupId);
+            return ResponseEntity.ok("Group with ID " + groupId + " has been deleted.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (ExecutionException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500).body("An error occurred while deleting the group.");
+        }
+    }
 }
 
 
