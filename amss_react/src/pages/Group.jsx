@@ -15,12 +15,12 @@ const Group = () => {
     const handleGroupClick = (groupId) => {
       navigate(`/groups/${groupId}`);
     };
-  
+
     return (
       <div>
         <h1>Travel Management</h1>
         <button onClick={() => setIsFormOpen(true)}>Add New Group</button>
-  
+
         {isFormOpen && (
           <div className="modal">
             <div className="modal-content">

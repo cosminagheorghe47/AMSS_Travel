@@ -65,6 +65,19 @@ public class GroupService {
             throw new RuntimeException("Group not found with id: " + groupId);
         }
     }
+    public void deleteGroup(Long groupId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        String groupIdStr = String.valueOf(groupId);
+
+        DocumentSnapshot document = db.collection(COLLECTION_NAME).document(groupIdStr).get().get();
+
+        if (document.exists()) {
+            db.collection(COLLECTION_NAME).document(groupIdStr).delete().get();
+        } else {
+            throw new RuntimeException("Group not found with ID: " + groupId);
+        }
+    }
+
 }
 
 
