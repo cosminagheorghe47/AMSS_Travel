@@ -5,6 +5,7 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
   const [amount, setAmount] = useState(0);
   const [type, setType] = useState('individual');
   const [selectedUsers, setSelectedUsers] = useState([]);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -51,6 +52,14 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validation: Check if amount is greater than 0
+    if (amount <= 0) {
+      setError('Amount must be greater than 0.');
+      return;
+    }
+
+    setError(''); // Clear previous errors
 
     const expenseData = {
       description,
@@ -122,6 +131,7 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
         />
       </label>
       </div>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
       <div>
       <label>
         Type:
