@@ -22,7 +22,7 @@ public class Expense {
     private String createdById;
 
     public Expense(Object groupId) {}
-
+    public Expense() {}
     // Constructor
     public Expense(double amount, long groupId, String description, long id, Date creationDate, ExpenseType type, String createdById) {
         this.amount = amount;
