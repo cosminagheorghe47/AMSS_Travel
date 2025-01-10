@@ -10,6 +10,7 @@ const GroupForm = ({ onClose, onAddGroup }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [error, setError] = useState(null);
 
+  // Fetch the users from the backend
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -38,12 +39,28 @@ const GroupForm = ({ onClose, onAddGroup }) => {
       description,
       startDate,
       endDate,
-      users: selectedUsers.map((id) => ({ id })),
     };
 
     try {
-      await axios.post('http://localhost:8080/api/groups', groupData);
+      // Step 1: Create the group and get its id
+      const groupResponse = await axios.post('http://localhost:8080/api/groups', groupData);
+      const createdGroupId = groupResponse.data.id;
 
+      if (!createdGroupId) {
+        throw new Error("Group ID not returned from group creation.");
+      }
+        console.log(createdGroupId);
+      // Step 2: Add selected users to the created group
+      if (selectedUsers.length > 0) {
+        const userGroupData = {
+          groupId: createdGroupId, // Pass the groupId
+          userIds: selectedUsers,   // Pass the selected user IDs
+        };
+
+        await axios.post('http://localhost:8080/api/user-groups/addUsersToGroup', userGroupData);
+      }
+
+      // Reset form and close modal
       setName('');
       setDescription('');
       setStartDate('');
@@ -53,7 +70,8 @@ const GroupForm = ({ onClose, onAddGroup }) => {
       onAddGroup();
       onClose();
     } catch (error) {
-      console.error('Error creating group:', error);
+      console.error('Error creating group or adding users:', error);
+      setError(error.message || 'An unexpected error occurred');
     }
   };
 
@@ -105,6 +123,7 @@ const GroupForm = ({ onClose, onAddGroup }) => {
       </div>
       <div>
         <h3>Select Users:</h3>
+
        <div className="user-list-container">
          {users.length > 0 ? (
            users.map((user) => (
@@ -122,12 +141,13 @@ const GroupForm = ({ onClose, onAddGroup }) => {
            <p>No users available.</p>
          )}
        </div>
-
+       
       </div>
       <button type="submit">Create Group</button>
       <button type="button" onClick={onClose}>
         Cancel
       </button>
+      {error && <p className="error">{error}</p>}
     </form>
   );
 };

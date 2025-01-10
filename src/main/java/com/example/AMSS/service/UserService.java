@@ -10,7 +10,7 @@ import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
 import org.springframework.stereotype.Service;
-
+import com.google.cloud.firestore.DocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -51,4 +51,27 @@ public class UserService {
         }
         return users;
     }
+
+
+
+    public User findById(Long userId) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+
+        ApiFuture<QuerySnapshot> queryFuture = db.collection(COLLECTION_NAME).whereEqualTo("id", userId).get();
+
+        QuerySnapshot querySnapshot = queryFuture.get();
+
+        if (!querySnapshot.isEmpty()) {
+            QueryDocumentSnapshot document = querySnapshot.getDocuments().get(0);
+
+            return new User(
+                    document.getLong("id"),
+                    document.getString("name"),
+                    document.getString("email")
+            );
+        }
+
+        return null;
+    }
+
 }

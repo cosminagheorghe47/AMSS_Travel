@@ -4,9 +4,13 @@ import Login from './pages/Login';
 import Group from './pages/Group';
 import { Routes, Route, useLocation  } from "react-router-dom";
 import Register from './pages/Register';
+
 import Profile from './pages/Profile';
 import Sidemenu from './components/Sidemenu';
 import PrivateRoute from './components/PrivateRoute';
+
+import Expense from './pages/Expense';
+
 
 function App() {
   const location = useLocation(); 
@@ -24,6 +28,9 @@ function App() {
         <Route path="/home" element={<Group />} />
         {/* <Route path="/profile" element={<PrivateRoute element={<Profile />} />} />
         <Route path="/home" element={<PrivateRoute element={<Group />} />} /> */}
+
+        <Route path="/group/:groupId" element={<Expense />} />
+
       </Routes>
     </>
   )

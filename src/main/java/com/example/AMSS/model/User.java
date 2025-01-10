@@ -1,6 +1,8 @@
 package com.example.AMSS.model;
 
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
