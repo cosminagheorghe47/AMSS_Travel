@@ -110,7 +110,7 @@ const GroupList = ({ refreshGroups }) => {
               <ul>
                 {group.users && group.users.length > 0 ? (
                   group.users.map((user) => (
-                    <li key={user.id}>{user.name}</li>
+                    <li key={user.uid}>{user.email}</li>
                   ))
                 ) : (
                   <p>No members assigned.</p>

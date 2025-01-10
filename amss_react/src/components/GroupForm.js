@@ -14,7 +14,7 @@ const GroupForm = ({ onClose, onAddGroup }) => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/users');
+        const response = await axios.get('http://localhost:8080/auth/users');
         setUsers(response.data);
       } catch (error) {
         setError('Error fetching users: ' + error.message);
@@ -123,23 +123,25 @@ const GroupForm = ({ onClose, onAddGroup }) => {
       </div>
       <div>
         <h3>Select Users:</h3>
-        <div className="user-list-container">
-          {users.length > 0 ? (
-            users.map((user) => (
-              <div key={user.id} className="user-checkbox">
-                <input
-                  type="checkbox"
-                  id={`user-${user.id}`}
-                  checked={selectedUsers.includes(user.id)}
-                  onChange={() => handleUserChange(user.id)}
-                />
-                <label htmlFor={`user-${user.id}`}>{user.name}</label>
-              </div>
-            ))
-          ) : (
-            <p>No users available.</p>
-          )}
-        </div>
+
+       <div className="user-list-container">
+         {users.length > 0 ? (
+           users.map((user) => (
+             <div key={user.uid} className="user-checkbox">
+               <input
+                 type="checkbox"
+                 id={`user-${user.uid}`}
+                 checked={selectedUsers.includes(user.uid)}
+                 onChange={() => handleUserChange(user.uid)}
+               />
+               <label htmlFor={`user-${user.uid}`}>{user.displayName}</label>
+             </div>
+           ))
+         ) : (
+           <p>No users available.</p>
+         )}
+       </div>
+       
       </div>
       <button type="submit">Create Group</button>
       <button type="button" onClick={onClose}>

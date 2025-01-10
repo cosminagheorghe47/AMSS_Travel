@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import '../styles/Auth.css';
 import {NavLink, useNavigate} from 'react-router-dom';
+import { loginWithEmailAndPassword } from '../firebase';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -12,22 +12,14 @@ const Login = () => {
         password: "",
     });
 
-    const handleLogin = (event) => {
+    const handleLogin = async (event) => {
         event.preventDefault();
-        console.log(values);
-        // axios.post('http://localhost:8080/auth/login', values)
-        // .then(res => {
-        //     if(res.data.Status === 'Success'){
-        //         localStorage.setItem('currentUser', JSON.stringify(values.username));
-        //         navigate("/home");
-        //     }
-        //     else if(res.data.Status === 'Error-Login')
-        //         setMessage(res.data.Message)
-        //     else{
-        //         setError(res.data.Error)
-        //     }
-        // })
-        // .catch(err => console.log(err))
+        try {
+            await loginWithEmailAndPassword(values.email, values.password);
+            navigate("/home");
+        } catch (error) {
+            setError("Login failed: " + error.message);
+        }
     }
 
     return (
