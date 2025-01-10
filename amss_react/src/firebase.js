@@ -1,6 +1,7 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
+import axios from 'axios';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -36,6 +37,12 @@ export const registerWithEmailAndPassword = async (email, password, username) =>
     await user.updateProfile({
       displayName: username
     });
+
+    // console.log("aici cream un user nou", user);
+    // const newUser = {
+    //   email, password, username
+    // }
+    // const res = await axios.post('http://localhost:8080/api/users', newUser);
 
     return user;
   } catch (error) {

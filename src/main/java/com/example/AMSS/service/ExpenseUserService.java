@@ -64,7 +64,7 @@ public class ExpenseUserService {
         return expenseUsers;
     }
 
-    public List<ExpenseUser> findByUserId(Long userId) throws ExecutionException, InterruptedException {
+    public List<ExpenseUser> findByUserId(String userId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         List<ExpenseUser> expenseUsers = new ArrayList<>();
 

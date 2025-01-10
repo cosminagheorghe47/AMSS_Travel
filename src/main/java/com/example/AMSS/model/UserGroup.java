@@ -12,10 +12,10 @@ public class UserGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
+    private String userId;
     private Long groupId;
 
-    public UserGroup(Long id, Long groupId, Long userId) {
+    public UserGroup(Long id, Long groupId, String userId) {
         this.id = id;
         this.groupId = groupId;
         this.userId = userId;
@@ -32,11 +32,11 @@ public class UserGroup {
         this.id = id;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 

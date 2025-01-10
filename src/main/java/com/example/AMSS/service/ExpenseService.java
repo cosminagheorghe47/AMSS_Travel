@@ -1,8 +1,10 @@
 package com.example.AMSS.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import com.example.AMSS.model.ExpenseType;
 import org.springframework.stereotype.Service;
 
 import com.example.AMSS.model.Expense;
@@ -24,13 +26,28 @@ public class ExpenseService {
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
 
         for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-            Expense expense = document.toObject(Expense.class);
+//            Expense expense = document.toObject(Expense.class);
+//            expenses.add(expense);
+            double amount = document.getDouble("amount");
+            long groupIdd = document.getLong("groupId");
+            String description = document.getString("description");
+            long id = document.getLong("id");
+            Date creationDate = document.getDate("creationDate");
+            ExpenseType type = ExpenseType.valueOf(document.getString("type"));
+            String createdById;
+            if(document.get("createdById") instanceof String)
+                createdById = document.getString("createdById");
+            else createdById = String.valueOf(document.getLong("createdById")); // Convertim în String
+
+            // Construim manual obiectul Expense
+            Expense expense = new Expense(amount, groupIdd, description, id, creationDate, type, createdById);
+
             expenses.add(expense);
         }
         return expenses;
     }
 
-    public List<Expense> getExpensesByUser(Long userId) throws ExecutionException, InterruptedException {
+    public List<Expense> getExpensesByUser(String userId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         List<Expense> expenses = new ArrayList<>();
 

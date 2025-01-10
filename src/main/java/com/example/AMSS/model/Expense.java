@@ -1,7 +1,6 @@
 package com.example.AMSS.model;
 
 import java.util.Date;
-import java.util.List;
 
 import jakarta.persistence.*;
 
@@ -20,10 +19,20 @@ public class Expense {
     private ExpenseType type;
 
     private Long groupId;
-    private Long createdById; 
+    private String createdById;
 
-    public Expense() {}
+    public Expense(Object groupId) {}
 
+    // Constructor
+    public Expense(double amount, long groupId, String description, long id, Date creationDate, ExpenseType type, String createdById) {
+        this.amount = amount;
+        this.groupId = groupId;
+        this.description = description;
+        this.id = id;
+        this.creationDate = creationDate;
+        this.type = type;
+        this.createdById = createdById;
+    }
     public Long getId() {
         return id;
     }
@@ -72,11 +81,11 @@ public class Expense {
         this.groupId = groupId;
     }
 
-    public Long getCreatedById() {
+    public String getCreatedById() {
         return createdById;
     }
 
-    public void setCreatedById(Long createdById) {
+    public void setCreatedById(String createdById) {
         this.createdById = createdById;
     }
     

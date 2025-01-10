@@ -38,7 +38,7 @@ public class ExpenseUserController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<ExpenseUser>> findByUserId(@PathVariable Long userId) throws ExecutionException, InterruptedException {
+    public ResponseEntity<List<ExpenseUser>> findByUserId(@PathVariable String userId) throws ExecutionException, InterruptedException {
         List<ExpenseUser> expenseUsers = expenseUserService.findByUserId(userId);
         return ResponseEntity.ok(expenseUsers);
     }

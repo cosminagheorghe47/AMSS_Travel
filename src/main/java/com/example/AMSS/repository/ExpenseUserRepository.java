@@ -9,6 +9,6 @@ import com.example.AMSS.model.ExpenseUser;
 
 @Repository
 public interface ExpenseUserRepository extends JpaRepository<ExpenseUser, Long> {
-    List<ExpenseUser> findByUserId(Long userId);
+    List<ExpenseUser> findByUserId(String userId);
     List<ExpenseUser> findByExpenseId(Long expenseId);
 }

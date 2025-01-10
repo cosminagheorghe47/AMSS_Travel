@@ -13,6 +13,8 @@ const ExpenseDetails = ({ expense, onClose, onDelete }) => {
             throw new Error('Failed to fetch expense users');
           }
           const expenseUsers = await expenseUsersResponse.json();
+          console.log("expense users", expenseUsers);
+          
 
           const userPromises = expenseUsers.map(async (expenseUser) => {
             const userResponse = await fetch(`/api/users/${expenseUser.userId}`);

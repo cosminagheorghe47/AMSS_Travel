@@ -21,6 +21,7 @@ const ExpenseList = ({ expenses, onDeleteExpense  }) => {
     setSelectedExpense(null); 
   };
 
+  console.log("expenses: ", expenses);
 
   const sortedExpenses = [...expenses].sort(
     (a, b) => new Date(b.creationDate) - new Date(a.creationDate)

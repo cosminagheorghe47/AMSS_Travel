@@ -14,11 +14,11 @@ public class ExpenseUser {
     private Long expenseId;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private String userId;
 
     public ExpenseUser() {}
 
-    public ExpenseUser(Long expenseId, Long userId) {
+    public ExpenseUser(Long expenseId, String userId) {
         this.expenseId = expenseId;
         this.userId = userId;
     }
@@ -40,11 +40,11 @@ public class ExpenseUser {
         this.expenseId = expenseId;
     }
 
-    public Long getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
     

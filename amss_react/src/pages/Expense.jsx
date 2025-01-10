@@ -23,6 +23,8 @@ const Expense = () => {
 
                 const expensesResponse = await fetch(`/api/expenses/group/${groupId}`);
                 const expensesData = await expensesResponse.json();
+                console.log("expensesData ", expensesData);
+                
                 setExpenses(expensesData);
             } catch (error) {
                 console.error("Error fetching group details or expenses:", error);

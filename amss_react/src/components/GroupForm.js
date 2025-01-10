@@ -52,6 +52,8 @@ const GroupForm = ({ onClose, onAddGroup }) => {
         console.log(createdGroupId);
       // Step 2: Add selected users to the created group
       if (selectedUsers.length > 0) {
+        console.log("selected users: ", selectedUsers);
+
         const userGroupData = {
           groupId: createdGroupId, // Pass the groupId
           userIds: selectedUsers,   // Pass the selected user IDs

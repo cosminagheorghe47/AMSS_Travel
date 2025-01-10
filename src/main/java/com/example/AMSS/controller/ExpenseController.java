@@ -29,7 +29,7 @@ public class ExpenseController {
     }
 
     @GetMapping("/createdBy/{userId}")
-    public ResponseEntity<List<Expense>> getExpensesByUser(@PathVariable Long userId) throws ExecutionException, InterruptedException {
+    public ResponseEntity<List<Expense>> getExpensesByUser(@PathVariable String userId) throws ExecutionException, InterruptedException {
         List<Expense> expenses = expenseService.getExpensesByUser(userId);
         return ResponseEntity.ok(expenses);
     }

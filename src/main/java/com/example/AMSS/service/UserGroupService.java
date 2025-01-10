@@ -2,6 +2,7 @@ package com.example.AMSS.service;
 import java.util.Map;
 import java.util.HashMap;
 import com.example.AMSS.model.User;
+import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.http.HttpStatus;
 import com.example.AMSS.model.UserGroup;
 import com.example.AMSS.repository.UserRepository;
@@ -42,7 +43,7 @@ public class UserGroupService {
     @Autowired
     private UserService userService;
 
-    public List<User> getUsersByGroupId(Long groupId) throws ExecutionException, InterruptedException {
+    public List<User> getUsersByGroupId(Long groupId) throws ExecutionException, InterruptedException, FirebaseAuthException {
         Firestore db = FirestoreClient.getFirestore();
 
         ApiFuture<QuerySnapshot> userGroupQuery = db.collection(USER_GROUP_COLLECTION)
@@ -51,7 +52,7 @@ public class UserGroupService {
 
         List<User> users = new ArrayList<>();
         for (QueryDocumentSnapshot userGroupDoc : userGroupQuery.get()) {
-            Long userId = userGroupDoc.getLong("userId");
+            String userId = userGroupDoc.getString("userId");
             if (userId != null) {
                 User user = userService.findById(userId);
                 if (user != null) {
@@ -67,7 +68,7 @@ public class UserGroupService {
     @Autowired
     private UserGroupRepository userGroupRepository;
 
-    public void addUsersToGroup(Long groupId, List<Long> userIds) throws Exception {
+    public void addUsersToGroup(Long groupId, List<String> userIds) throws Exception {
 
         Firestore db = FirestoreClient.getFirestore();
         System.out.println("here"+userIds);
@@ -128,7 +129,7 @@ public class UserGroupService {
         return userGroupRepository.findById(id);
     }
 
-    public List<UserGroup> getUserGroupsByUserId(Long userId) {
+    public List<UserGroup> getUserGroupsByUserId(String userId) {
         return userGroupRepository.findByUserId(userId);
     }
 

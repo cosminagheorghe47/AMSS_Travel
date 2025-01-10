@@ -1,5 +1,6 @@
 package com.example.AMSS.controller;
 
+import com.example.AMSS.model.Group;
 import com.example.AMSS.model.User;
 import com.example.AMSS.repository.UserRepository;
 import com.example.AMSS.service.UserService;
@@ -53,6 +54,19 @@ public class UserController {
     public ResponseEntity<List<UserRecord>> getAllUsers() throws Exception {
         List<UserRecord> users = userService.getAllUsers();
         return new ResponseEntity<>(users, HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<User> getUserById(@PathVariable String userId) {
+        System.out.println("aiciiiii");
+        try {
+            User user = userService.findById(userId);
+            return ResponseEntity.ok(user);
+        } catch (RuntimeException | ExecutionException | InterruptedException e) {
+            return ResponseEntity.status(404).body(null);
+        } catch (FirebaseAuthException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
 

@@ -6,6 +6,7 @@ import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 import com.google.cloud.firestore.WriteResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.ListUsersPage;
 import com.google.firebase.auth.UserRecord;
 import com.google.firebase.cloud.FirestoreClient;
@@ -54,20 +55,28 @@ public class UserService {
 
 
 
-    public User findById(Long userId) throws ExecutionException, InterruptedException {
+    public User findById(String userId) throws ExecutionException, InterruptedException, FirebaseAuthException {
         Firestore db = FirestoreClient.getFirestore();
 
-        ApiFuture<QuerySnapshot> queryFuture = db.collection(COLLECTION_NAME).whereEqualTo("id", userId).get();
-
-        QuerySnapshot querySnapshot = queryFuture.get();
-
-        if (!querySnapshot.isEmpty()) {
-            QueryDocumentSnapshot document = querySnapshot.getDocuments().get(0);
-
+//        ApiFuture<QuerySnapshot> queryFuture = db.collection(COLLECTION_NAME).whereEqualTo("id", userId).get();
+//
+//        QuerySnapshot querySnapshot = queryFuture.get();
+//
+//        if (!querySnapshot.isEmpty()) {
+//            QueryDocumentSnapshot document = querySnapshot.getDocuments().get(0);
+//
+//            return new User(
+//                    document.getLong("id"),
+//                    document.getString("name"),
+//                    document.getString("email")
+//            );
+//        }
+        UserRecord userRecord = FirebaseAuth.getInstance().getUser(userId);
+        if(userRecord.getUid() != null) {
             return new User(
-                    document.getLong("id"),
-                    document.getString("name"),
-                    document.getString("email")
+                    userRecord.getUid(),
+                    userRecord.getDisplayName(),
+                    userRecord.getEmail()
             );
         }
 

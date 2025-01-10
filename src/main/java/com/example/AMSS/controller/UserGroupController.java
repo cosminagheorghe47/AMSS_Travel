@@ -3,6 +3,7 @@ import java.util.Map;
 import java.util.HashMap;
 import com.example.AMSS.model.UserGroup;
 import com.example.AMSS.service.UserGroupService;
+import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +26,7 @@ public class UserGroupController {
     private UserGroupService userGroupService;
 
     @GetMapping("/group/{groupId}")
-    public ResponseEntity<List<User>> getUsersByGroupId (@PathVariable Long groupId) throws ExecutionException, InterruptedException{
+    public ResponseEntity<List<User>> getUsersByGroupId (@PathVariable Long groupId) throws ExecutionException, InterruptedException, FirebaseAuthException {
         List<User> users = userGroupService.getUsersByGroupId(groupId);
         System.out.println("aici2");
         return ResponseEntity.ok(users);
@@ -36,7 +37,7 @@ public class UserGroupController {
     @PostMapping("/addUsersToGroup")
     public ResponseEntity<String> addUsersToGroup(@RequestBody Map<String, Object> payload) {
         Long groupId = ((Number) payload.get("groupId")).longValue();
-        List<Long> userIds = (List<Long>) payload.get("userIds");
+        List<String> userIds = (List<String>) payload.get("userIds");
         System.out.println("1");
         try {
             System.out.println(groupId);
@@ -70,7 +71,7 @@ public class UserGroupController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<UserGroup>> getUserGroupsByUserId(@PathVariable Long userId) {
+    public ResponseEntity<List<UserGroup>> getUserGroupsByUserId(@PathVariable String userId) {
         List<UserGroup> userGroups = userGroupService.getUserGroupsByUserId(userId);
         return ResponseEntity.ok(userGroups);
     }
