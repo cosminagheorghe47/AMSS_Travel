@@ -6,7 +6,9 @@ import java.util.List;
 
 import com.example.AMSS.model.ExpenseType;
 import org.springframework.stereotype.Service;
-
+import com.example.AMSS.model.Notification;
+import com.example.AMSS.model.User;
+import org.checkerframework.checker.units.qual.N;
 import com.example.AMSS.model.Expense;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -17,7 +19,13 @@ import java.util.concurrent.ExecutionException;
 public class ExpenseService {
 
     private static final String COLLECTION_NAME = "expenses";
+    private final NotificationService notificationService;
+    private final UserGroupService userGroupService;
 
+    public ExpenseService(NotificationService notificationService, UserGroupService userGroupService) {
+        this.notificationService = notificationService;
+        this.userGroupService = userGroupService;
+    }
     public List<Expense> getExpensesByGroup(Long groupId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         List<Expense> expenses = new ArrayList<>();

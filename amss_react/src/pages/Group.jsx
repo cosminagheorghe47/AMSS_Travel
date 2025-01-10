@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GroupForm from "../components/GroupForm";
 import GroupList from "../components/GroupList";
+import NotificationsDropDown from "../components/NotificationsDropDown";
 import { useNavigate } from 'react-router-dom';
 
 const Group = () => {
@@ -18,7 +19,10 @@ const Group = () => {
 
     return (
       <div>
-        <h1>Travel Management</h1>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h1>Travel Management</h1>
+          <NotificationsDropDown />
+        </div>
         <button onClick={() => setIsFormOpen(true)}>Add New Group</button>
 
         {isFormOpen && (

@@ -1,6 +1,8 @@
 package com.example.AMSS.service;
 
+import com.example.AMSS.model.Expense;
 import com.example.AMSS.model.ExpenseUser;
+import com.example.AMSS.model.Notification;
 import com.example.AMSS.repository.ExpenseUserRepository;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -15,9 +17,10 @@ import java.util.concurrent.ExecutionException;
 public class ExpenseUserService {
 
     private final ExpenseUserRepository expenseUserRepository;
-
-    public ExpenseUserService(ExpenseUserRepository expenseUserRepository) {
+    private final NotificationService notificationService;
+    public ExpenseUserService(ExpenseUserRepository expenseUserRepository,NotificationService notificationService) {
         this.expenseUserRepository = expenseUserRepository;
+        this.notificationService=notificationService;
     }
 
     private static final String COLLECTION_NAME = "expense_users";
@@ -30,10 +33,55 @@ public class ExpenseUserService {
 
         ApiFuture<WriteResult> result = db.collection(COLLECTION_NAME).document(id).set(expenseUser);
         System.out.println("ExpenseUser added at: " + result.get().getUpdateTime());
-
+        createNotificationForExpenseUser(expenseUser);
         return expenseUser;
     }
+    private void createNotificationForExpenseUser(ExpenseUser expenseUser) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
 
+        String expenseId = String.valueOf(expenseUser.getExpenseId());
+        DocumentReference expenseDocRef = db.collection("expenses").document(expenseId);
+        DocumentSnapshot expenseSnapshot = expenseDocRef.get().get();
+
+        if (!expenseSnapshot.exists()) {
+            System.out.println("Expense not found for ID: " + expenseId);
+            return;
+        }
+
+        Expense expense = expenseSnapshot.toObject(Expense.class);
+
+        Notification notification = new Notification();
+        notification.setUserId(expenseUser.getUserId());
+        notification.setDescription("User + *created by* added a new expense: " + expense.getDescription());
+        notification.setGroupId(expense.getGroupId());
+        notification.setAmount(expense.getAmount());
+        notification.setRead(false);
+
+        // Save the notification in Firestore
+        notificationService.createNotification(notification);
+
+        System.out.println("Notification created for user: " + expenseUser.getUserId());
+//        Long groupId = expense.getGroupId();
+//        System.out.println("ADDING NOTIFIcations FOR expense : " + expense.getDescription());
+//        System.out.println("Group id for expense: " + groupId);
+//
+////        List<User> usersInGroup = userGroupService.getUsersByGroupId(groupId);
+//
+////        for (User user : usersInGroup) {
+////            if (user.getId().equals(expense.getCreatedById())) {
+////                continue;
+////            }
+//
+//        Notification notification = new Notification();
+//        notification.setUserId(expense.getCreatedById());
+//        notification.setDescription("User _ added a new expense: " + expense.getDescription());
+//        notification.setGroupId(groupId);
+//        notification.setAmount(expense.getAmount());
+//        notification.setRead(false);
+//        System.out.println("Group id for notification: " + notification.getGroupId() + "    userID: "  + notification.getUserId());
+//        notificationService.createNotification(notification);
+//        }
+    }
     public void deleteExpenseUser(Long id) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         String idStr = String.valueOf(id);
