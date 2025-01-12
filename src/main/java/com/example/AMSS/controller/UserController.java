@@ -58,7 +58,6 @@ public class UserController {
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<User> getUserById(@PathVariable String userId) {
-        System.out.println("aiciiiii");
         try {
             User user = userService.findById(userId);
             return ResponseEntity.ok(user);

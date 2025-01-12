@@ -51,4 +51,12 @@ public class ExpenseController {
         expenseService.deleteExpense(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}/update-amount-paid")
+    public ResponseEntity<Expense> updateAmountPaid(
+            @PathVariable Long id,
+            @RequestParam double amountPaid) throws ExecutionException, InterruptedException {
+        Expense expense = expenseService.updateAmountPaid(id, amountPaid);
+        return ResponseEntity.ok(expense);
+    }
 }

@@ -1,68 +1,134 @@
 import React, { useEffect, useState } from 'react';
+import { getAuth } from 'firebase/auth'; 
 
 const ExpenseDetails = ({ expense, onClose, onDelete }) => {
   const [participants, setParticipants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [createdByName, setCreatedByName] = useState('Unknown');
+  const [isPayButtonActive, setIsPayButtonActive] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null); 
 
   useEffect(() => {
-    const fetchParticipants = async () => {
+    // Obține utilizatorul curent din Firebase Authentication
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (user) {
+      setCurrentUser(user);
+    } else {
+      console.error('No authenticated user found.');
+    }
+  }, []);
+
+
+  useEffect(() => {
+
+    if (!currentUser) return;
+    
+    const fetchCreatorName = async () => {
       try {
-        if (expense.type === 'GROUP') {
-          const expenseUsersResponse = await fetch(`/api/expense-users/expense/${expense.id}`);
-          if (!expenseUsersResponse.ok) {
-            throw new Error('Failed to fetch expense users');
-          }
-          const expenseUsers = await expenseUsersResponse.json();
-          console.log("expense users", expenseUsers);
-          
-
-          const userPromises = expenseUsers.map(async (expenseUser) => {
-            const userResponse = await fetch(`/api/users/${expenseUser.userId}`);
-            if (!userResponse.ok) {
-              throw new Error(`Failed to fetch user with ID ${expenseUser.userId}`);
-            }
-            return { ...expenseUser, user: await userResponse.json() };
-          });
-
-          const usersWithAmounts = await Promise.all(userPromises);
-          setParticipants(
-            usersWithAmounts.map(({ user }) => ({
-              ...user,
-              amount: (expense.amount / usersWithAmounts.length).toFixed(2),
-            }))
-          );
+        const userResponse = await fetch(`/auth/users/${expense.createdById}`);
+        if (!userResponse.ok) {
+          throw new Error(`Failed to fetch user with ID ${expense.createdById}`);
         }
+        const userData = await userResponse.json();
+        setCreatedByName(userData.name || 'Unknown');
       } catch (error) {
-        console.error('Error fetching participants:', error);
-      } finally {
-        setIsLoading(false); 
+        console.error('Error fetching creator name:', error);
       }
     };
 
+    const fetchParticipants = async () => {
+      try {
+        const expenseUsersResponse = await fetch(`/api/expense-users/expense/${expense.id}`);
+        if (!expenseUsersResponse.ok) {
+          throw new Error('Failed to fetch expense users');
+        }
+        const expenseUsers = await expenseUsersResponse.json();
+
+        const userPromises = expenseUsers.map(async (expenseUser) => {
+          const userResponse = await fetch(`/auth/users/${expenseUser.userId}`);
+          if (!userResponse.ok) {
+            throw new Error(`Failed to fetch user with ID ${expenseUser.userId}`);
+          }
+          return { ...expenseUser, user: await userResponse.json() };
+        });
+
+        const usersWithAmounts = await Promise.all(userPromises);
+        setParticipants(
+          usersWithAmounts.map(({ user, ...expenseUser }) => ({
+            ...expenseUser,
+            name: user.name || 'Unknown',
+            amount: (expense.amount / usersWithAmounts.length).toFixed(2),
+          }))
+        );
+
+        const currentUserParticipant = usersWithAmounts.find(
+          (participant) => participant.user.id === currentUser.uid
+        );
+        console.log('Current User Participant:', currentUserParticipant); // Debugging
+        setIsPayButtonActive(
+          currentUserParticipant &&
+          !currentUserParticipant.status &&
+          currentUser.uid !== expense.createdById
+        );
+      } catch (error) {
+        console.error('Error fetching participants:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCreatorName();
     fetchParticipants();
-  }, [expense]);
+  }, [expense, currentUser]);
+
+  const handlePay = async () => {
+    try {
+      const participant = participants.find((p) => p.userId === currentUser.uid);
+      console.log('Handle Pay Participant:', participant);
+      if (!participant || participant.status) return;
+
+      const newAmountPaid = expense.amountPaid + parseFloat(participant.amount);
+
+       // Update `amountPaid` în server
+       await fetch(`/api/expenses/${expense.id}/update-amount-paid?amountPaid=${newAmountPaid}`, {
+        method: 'PUT',
+      });
+  
+      // Update status pe server
+      await fetch(`/api/expense-users/${participant.id}/update-status?status=true`, {
+        method: 'PUT',
+      });
+  
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.userId === currentUser.uid ? { ...p, status: true } : p
+        )
+      );
+      setIsPayButtonActive(false);
+
+      onClose(); // Închide modalul
+      
+    } catch (error) {
+      console.error('Error processing payment:', error);
+    }
+  };
 
   const handleDelete = async () => {
     try {
-      console.log(`Delete initiated for expense ID: ${expense.id}`);
-      
-      if (expense.type === 'GROUP') {
-        const expenseUsersResponse = await fetch(`/api/expense-users/expense/${expense.id}`);
-        if (expenseUsersResponse.ok) {
-          const expenseUsers = await expenseUsersResponse.json();
-          const deletePromises = expenseUsers.map((expenseUser) =>
-            fetch(`/api/expense-users/${expenseUser.id}`, { method: 'DELETE' })
-          );
-          await Promise.all(deletePromises);
-          console.log(`Expense-users for expense ID: ${expense.id} deleted successfully.`);
-        }
+      const expenseUsersResponse = await fetch(`/api/expense-users/expense/${expense.id}`);
+      if (expenseUsersResponse.ok) {
+        const expenseUsers = await expenseUsersResponse.json();
+        const deletePromises = expenseUsers.map((expenseUser) =>
+          fetch(`/api/expense-users/${expenseUser.id}`, { method: 'DELETE' })
+        );
+        await Promise.all(deletePromises);
       }
 
       const expenseResponse = await fetch(`/api/expenses/${expense.id}`, { method: 'DELETE' });
       if (!expenseResponse.ok) {
         throw new Error('Failed to delete expense');
       }
-      console.log(`Expense ID: ${expense.id} deleted successfully.`);
 
       if (onDelete) {
         onDelete(expense.id);
@@ -108,15 +174,17 @@ const ExpenseDetails = ({ expense, onClose, onDelete }) => {
             <strong>Date:</strong> {new Date(expense.creationDate).toLocaleDateString()}
           </p>
         </div>
-        <p>
+        <p style={{ textAlign: 'left'}}>
           <strong>Amount:</strong> {expense.amount} RON
         </p>
-        <p>
-          <strong>Paid By:</strong> {expense.createdById || 'Unknown'}
+        <p style={{ textAlign: 'left'}}>
+          <strong>Paid By:</strong> {createdByName}
         </p>
         {expense.type === 'GROUP' && (
           <div>
-            <strong>Participants:</strong>
+            <p style={{ textAlign: 'left'}} >
+            <strong >Participants:</strong>
+            </p>
             <ul className="user-list-container" style={{ padding: '0', listStyleType: 'none' }}>
               {participants.map((participant) => (
                 <li
@@ -129,7 +197,10 @@ const ExpenseDetails = ({ expense, onClose, onDelete }) => {
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
                   }}
                 >
-                  {participant.name} <span style={{ float: 'right' }}>{participant.amount} RON</span>
+                  {participant.name}{' '}
+                  <span style={{ float: 'right' }}>
+                    {participant.status ? 'Paid' : `${participant.amount} RON`}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -138,15 +209,17 @@ const ExpenseDetails = ({ expense, onClose, onDelete }) => {
         <div style={{ marginTop: '20px' }}>
           {expense.type === 'GROUP' && (
             <button
+              onClick={handlePay}
+              disabled={!isPayButtonActive}
               style={{
                 display: 'block',
                 width: '100%',
-                backgroundColor: '#6A5ACD',
-                color: 'white',
+                backgroundColor: isPayButtonActive ? '#6A5ACD' : '#d3d3d3',
+                color: isPayButtonActive ? 'white' : '#555',
                 padding: '15px',
                 border: 'none',
                 borderRadius: '5px',
-                cursor: 'pointer',
+                cursor: isPayButtonActive ? 'pointer' : 'not-allowed',
                 fontSize: '16px',
                 marginBottom: '10px',
               }}

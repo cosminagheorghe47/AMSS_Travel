@@ -71,15 +71,18 @@ public class UserService {
 //                    document.getString("email")
 //            );
 //        }
-        UserRecord userRecord = FirebaseAuth.getInstance().getUser(userId);
-        if(userRecord.getUid() != null) {
-            return new User(
+        try {
+            UserRecord userRecord = FirebaseAuth.getInstance().getUser(userId);
+            if (userRecord != null) {
+                return new User(
                     userRecord.getUid(),
                     userRecord.getDisplayName(),
                     userRecord.getEmail()
-            );
+                );
         }
-
+        } catch (FirebaseAuthException e) {
+            System.err.println("Error fetching user with UID: " + userId + ". Error: " + e.getMessage());
+        }
         return null;
     }
 

@@ -39,6 +39,19 @@ const Expense = () => {
         setIsFormOpen(false);
     };
 
+    const handleCloseModal = (updatedExpense) => {
+        setIsModalOpen(false);
+      
+        if (updatedExpense) {
+          setExpenses((prevExpenses) =>
+            prevExpenses.map((exp) =>
+              exp.id === updatedExpense.id ? updatedExpense : exp
+            )
+          );
+        }
+      };
+      
+
     const handleDeleteExpense = (expenseId) => {
         setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== expenseId));
     };
@@ -49,7 +62,7 @@ const Expense = () => {
 
     const calculateIndividualExpenses = () => {
         return expenses
-            .filter((expense) => expense.type === "individual")
+            .filter((expense) => expense.type === "INDIVIDUAL")
             .reduce((total, expense) => total + expense.amount, 0)
             .toFixed(2);
     };
@@ -113,7 +126,7 @@ const Expense = () => {
             {isModalOpen && selectedExpense && (
                 <ExpenseDetails
                     expense={selectedExpense}
-                    onClose={() => setIsModalOpen(false)}
+                    onClose={(updatedExpense) => handleCloseModal(updatedExpense)}
                     onDelete={(expenseId) => {
                         setExpenses((prevExpenses) => prevExpenses.filter((exp) => exp.id !== expenseId));
                     }}
