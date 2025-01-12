@@ -16,11 +16,14 @@ public class ExpenseUser {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    private Boolean status;
+
     public ExpenseUser() {}
 
     public ExpenseUser(Long expenseId, String userId) {
         this.expenseId = expenseId;
         this.userId = userId;
+        this.status = false;
     }
 
     // Getters și Setters
@@ -30,6 +33,14 @@ public class ExpenseUser {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     public Long getExpenseId() {
