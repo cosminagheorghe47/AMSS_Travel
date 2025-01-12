@@ -10,7 +10,6 @@ const GroupForm = ({ onClose, onAddGroup }) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch the users from the backend
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -42,7 +41,6 @@ const GroupForm = ({ onClose, onAddGroup }) => {
     };
 
     try {
-      // Step 1: Create the group and get its id
       const groupResponse = await axios.post('http://localhost:8080/api/groups', groupData);
       const createdGroupId = groupResponse.data.id;
 
@@ -50,19 +48,17 @@ const GroupForm = ({ onClose, onAddGroup }) => {
         throw new Error("Group ID not returned from group creation.");
       }
         console.log(createdGroupId);
-      // Step 2: Add selected users to the created group
       if (selectedUsers.length > 0) {
         console.log("selected users: ", selectedUsers);
 
         const userGroupData = {
-          groupId: createdGroupId, // Pass the groupId
-          userIds: selectedUsers,   // Pass the selected user IDs
+          groupId: createdGroupId,
+          userIds: selectedUsers,
         };
 
         await axios.post('http://localhost:8080/api/user-groups/addUsersToGroup', userGroupData);
       }
 
-      // Reset form and close modal
       setName('');
       setDescription('');
       setStartDate('');
@@ -143,7 +139,7 @@ const GroupForm = ({ onClose, onAddGroup }) => {
            <p>No users available.</p>
          )}
        </div>
-       
+
       </div>
       <button type="submit">Create Group</button>
       <button type="button" onClick={onClose}>
