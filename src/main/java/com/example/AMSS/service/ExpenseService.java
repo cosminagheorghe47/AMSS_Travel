@@ -26,34 +26,43 @@ public class ExpenseService {
         this.notificationService = notificationService;
         this.userGroupService = userGroupService;
     }
+
     public List<Expense> getExpensesByGroup(Long groupId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
         List<Expense> expenses = new ArrayList<>();
-
+    
         Query query = db.collection(COLLECTION_NAME).whereEqualTo("groupId", groupId);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
-
+    
         for (DocumentSnapshot document : querySnapshot.get().getDocuments()) {
-//            Expense expense = document.toObject(Expense.class);
-//            expenses.add(expense);
             double amount = document.getDouble("amount");
             long groupIdd = document.getLong("groupId");
             String description = document.getString("description");
             long id = document.getLong("id");
             Date creationDate = document.getDate("creationDate");
             ExpenseType type = ExpenseType.valueOf(document.getString("type"));
+            
+            // Verifică și setează amountPaid
+            Double amountPaid = document.getDouble("amountPaid");
+            if (amountPaid == null) {
+                amountPaid = 0.0;
+            }
+    
             String createdById;
-            if(document.get("createdById") instanceof String)
+            if (document.get("createdById") instanceof String)
                 createdById = document.getString("createdById");
-            else createdById = String.valueOf(document.getLong("createdById")); // Convertim în String
-
+            else 
+                createdById = String.valueOf(document.getLong("createdById")); // Convertim în String
+    
             // Construim manual obiectul Expense
-            Expense expense = new Expense(amount, groupIdd, description, id, creationDate, type, createdById);
-
+            Expense expense = new Expense(amount, groupIdd, description, id, creationDate, type, createdById, amountPaid);
+            expense.setAmountPaid(amountPaid); // Setăm valoarea amountPaid
+    
             expenses.add(expense);
         }
         return expenses;
     }
+    
 
     public List<Expense> getExpensesByUser(String userId) throws ExecutionException, InterruptedException {
         Firestore db = FirestoreClient.getFirestore();
@@ -101,6 +110,7 @@ public class ExpenseService {
             existingExpense.setCreationDate(updatedExpense.getCreationDate());
             existingExpense.setGroupId(updatedExpense.getGroupId());
             existingExpense.setCreatedById(updatedExpense.getCreatedById());
+            existingExpense.setAmountPaid(updatedExpense.getAmountPaid());
 
             ApiFuture<WriteResult> writeResult = docRef.set(existingExpense);
             System.out.println("Expense updated at: " + writeResult.get().getUpdateTime());
@@ -123,5 +133,24 @@ public class ExpenseService {
 
         ApiFuture<WriteResult> writeResult = docRef.delete();
         System.out.println("Expense deleted at: " + writeResult.get().getUpdateTime());
+    }
+
+    public Expense updateAmountPaid(Long expenseId, double amountPaid) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference docRef = db.collection("expenses").document(expenseId.toString());
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+    
+        if (!document.exists()) {
+            throw new RuntimeException("Expense not found with id: " + expenseId);
+        }
+    
+        Expense expense = document.toObject(Expense.class);
+        if (expense != null) {
+            expense.setAmountPaid(expense.getAmountPaid() + amountPaid);
+            docRef.set(expense);
+        }
+    
+        return expense;
     }
 }

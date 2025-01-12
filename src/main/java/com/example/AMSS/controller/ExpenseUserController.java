@@ -48,5 +48,14 @@ public class ExpenseUserController {
         ExpenseUser expenseUser = expenseUserService.updateExpenseUser(id, updatedExpenseUser);
         return ResponseEntity.ok(expenseUser);
     }
+
+    @PutMapping("/{id}/update-status")
+    public ResponseEntity<ExpenseUser> updateStatus(
+            @PathVariable Long id,
+            @RequestParam boolean status) throws ExecutionException, InterruptedException {
+        ExpenseUser expenseUser = expenseUserService.updateStatus(id, status);
+        return ResponseEntity.ok(expenseUser);
+    }
+
     
 }

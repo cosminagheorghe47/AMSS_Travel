@@ -149,5 +149,25 @@ public class ExpenseUserService {
 
         return existingExpenseUser;
     }
+
+    public ExpenseUser updateStatus(Long expenseUserId, boolean status) throws ExecutionException, InterruptedException {
+        Firestore db = FirestoreClient.getFirestore();
+        DocumentReference docRef = db.collection("expense_users").document(expenseUserId.toString());
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        DocumentSnapshot document = future.get();
+    
+        if (!document.exists()) {
+            throw new RuntimeException("ExpenseUser not found with id: " + expenseUserId);
+        }
+    
+        ExpenseUser expenseUser = document.toObject(ExpenseUser.class);
+        if (expenseUser != null) {
+            expenseUser.setStatus(status);
+            docRef.set(expenseUser);
+        }
+    
+        return expenseUser;
+    }
+    
     
 }

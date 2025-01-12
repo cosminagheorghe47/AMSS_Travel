@@ -2,6 +2,8 @@ package com.example.AMSS.model;
 
 import java.util.Date;
 
+import org.checkerframework.checker.units.qual.degrees;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -20,11 +22,12 @@ public class Expense {
 
     private Long groupId;
     private String createdById;
+    private double amountPaid;
 
     public Expense(Object groupId) {}
     public Expense() {}
     // Constructor
-    public Expense(double amount, long groupId, String description, long id, Date creationDate, ExpenseType type, String createdById) {
+    public Expense(double amount, long groupId, String description, long id, Date creationDate, ExpenseType type, String createdById, double amountPaid) {
         this.amount = amount;
         this.groupId = groupId;
         this.description = description;
@@ -32,7 +35,17 @@ public class Expense {
         this.creationDate = creationDate;
         this.type = type;
         this.createdById = createdById;
+        this.amountPaid = amountPaid;
     }
+
+    public double getAmountPaid() {
+        return amountPaid;
+    }
+
+    public void setAmountPaid(double amountPaid) {
+        this.amountPaid = amountPaid;
+    }
+
     public Long getId() {
         return id;
     }
