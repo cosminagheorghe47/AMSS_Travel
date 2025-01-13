@@ -71,6 +71,7 @@ const ExpenseForm = ({ groupDetails, onClose, onAddExpense }) => {
       type: type.toUpperCase(),
       groupId: groupDetails.id,
       createdById: currentUser.uid,
+      createdByName: currentUser.displayName || "Unknown"
     };
 
     try {
