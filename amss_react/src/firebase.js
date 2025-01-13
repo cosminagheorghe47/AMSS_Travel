@@ -49,3 +49,18 @@ export const registerWithEmailAndPassword = async (email, password, username) =>
     throw error; 
   }
 };
+
+
+// export const updateProfile = async (email, password, username) => {
+//   try {
+
+//     await user.updateProfile({
+//       displayName: username
+//     });
+
+//     return user;
+//   } catch (error) {
+//     throw error; 
+//   }
+// };
+
