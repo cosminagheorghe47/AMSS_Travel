@@ -83,9 +83,9 @@ public class ExpenseService {
 
         String id = String.valueOf(System.currentTimeMillis());
         expense.setId(Long.valueOf(id));
-
+        expense.setCreatedById(expense.getCreatedById());
         ApiFuture<WriteResult> result = db.collection(COLLECTION_NAME).document(id).set(expense);
-        System.out.println("Expense added at: " + result.get().getUpdateTime());
+        System.out.println("EXPENSE CREATOR: " + expense.getCreatedById());
 
         return expense;
     }

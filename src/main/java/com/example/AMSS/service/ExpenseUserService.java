@@ -3,7 +3,9 @@ package com.example.AMSS.service;
 import com.example.AMSS.model.Expense;
 import com.example.AMSS.model.ExpenseUser;
 import com.example.AMSS.model.Notification;
+import com.example.AMSS.repository.ExpenseRepository;
 import com.example.AMSS.repository.ExpenseUserRepository;
+import com.example.AMSS.repository.UserRepository;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import com.google.firebase.cloud.FirestoreClient;
@@ -18,9 +20,11 @@ public class ExpenseUserService {
 
     private final ExpenseUserRepository expenseUserRepository;
     private final NotificationService notificationService;
-    public ExpenseUserService(ExpenseUserRepository expenseUserRepository,NotificationService notificationService) {
+    private final UserRepository userRepository;
+    public ExpenseUserService(ExpenseUserRepository expenseUserRepository,NotificationService notificationService, UserRepository userRepository) {
         this.expenseUserRepository = expenseUserRepository;
         this.notificationService=notificationService;
+        this.userRepository=userRepository;
     }
 
     private static final String COLLECTION_NAME = "expense_users";
@@ -52,7 +56,8 @@ public class ExpenseUserService {
 
         Notification notification = new Notification();
         notification.setUserId(expenseUser.getUserId());
-        notification.setDescription("User + *created by* added a new expense: " + expense.getDescription());
+
+        notification.setDescription("User "+ expense.getCreatedByName()+" added a new expense: " + expense.getDescription());
         notification.setGroupId(expense.getGroupId());
         notification.setAmount(expense.getAmount());
         notification.setRead(false);

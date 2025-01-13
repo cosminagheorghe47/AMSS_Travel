@@ -22,6 +22,7 @@ public class Expense {
 
     private Long groupId;
     private String createdById;
+    private String createdByName;
     private double amountPaid;
 
     public Expense(Object groupId) {}
@@ -36,6 +37,25 @@ public class Expense {
         this.type = type;
         this.createdById = createdById;
         this.amountPaid = amountPaid;
+    }
+    public Expense(double amount, long groupId, String description, long id, Date creationDate, ExpenseType type, String createdById, double amountPaid, String createdByName) {
+        this.amount = amount;
+        this.groupId = groupId;
+        this.description = description;
+        this.id = id;
+        this.creationDate = creationDate;
+        this.type = type;
+        this.createdById = createdById;
+        this.amountPaid = amountPaid;
+        this.createdByName =createdByName;
+    }
+
+    public String getCreatedByName() {
+        return createdByName;
+    }
+
+    public void setCreatedByName(String createdByName) {
+        this.createdByName = createdByName;
     }
 
     public double getAmountPaid() {
