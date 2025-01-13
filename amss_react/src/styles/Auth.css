@@ -47,3 +47,72 @@ form {
     flex-direction: column;
     justify-content: space-between;
 }
+
+.profile-div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .center-div {
+        width: 30%;
+    }
+
+    .profile-icon {
+        justify-self: center;
+        height: 200px;
+        width: 200px;
+        background-image: url("../assets/icon.png");
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .details {
+        margin-top: 20px;
+    }
+
+    .reset-password {
+        margin-top: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        .reset-btn {
+            margin-top: 10px;
+        }
+    }
+
+    .bottom-buttons {
+        margin-top: 20px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        button {
+            margin-right: 20px;
+        }
+
+        .logout {
+            margin: 0 !important;
+            background-color: rgb(255, 182, 46);
+        }
+    }
+}
+
+button:disabled {
+    background-color: #9285bc;
+}
+
+
+.no-user {
+    width: 100%;
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}

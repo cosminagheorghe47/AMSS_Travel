@@ -70,6 +70,10 @@ const GroupList = ({ refreshGroups }) => {
     navigate(`/group/${groupId}`);
   };
 
+  const handleNavigateLogin = () => {
+    navigate("/login");
+  }
+
   const deleteGroup = async (groupId) => {
     if (window.confirm('Are you sure you want to delete this group?')) {
       try {
@@ -88,7 +92,14 @@ const GroupList = ({ refreshGroups }) => {
   }
 
   if (!user) {
-    return <div>No user logged in</div>;
+    return (
+      <div className='no-user'>
+        No user logged in 
+        <div> 
+          <button onClick={handleNavigateLogin}>LOG IN</button>
+        </div>
+      </div>
+    )
   }
 
   return (
